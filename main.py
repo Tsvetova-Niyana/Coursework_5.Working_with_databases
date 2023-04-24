@@ -33,11 +33,7 @@ if __name__ == '__main__':
         print(employment['id'], employment['name'])
     print()
 
-    # for page in range(5):
-    #     response_vacancies = requests.get(f'https://api.hh.ru/vacancies?employer_id=1519011',
-    #                                       params={'per_page': 100, 'page': page}).json()
-    #     for vac in response_vacancies["items"]:
-    #         print(vac)
+
 
     # получение информации о вакансии
     # for page in range(5):
