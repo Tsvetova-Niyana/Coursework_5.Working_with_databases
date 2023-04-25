@@ -15,6 +15,9 @@ import psycopg2
 
 
 class DBManager:
+    """
+    Класс DBManager для работы с БД
+    """
 
     def __init__(self, database, user, password):
         self.database = database
@@ -23,6 +26,10 @@ class DBManager:
 
     @property
     def connect(self):
+        """
+        Функция подключения к БД
+        """
+
         connect = psycopg2.connect(
             database=self.database,
             user=self.user,
@@ -32,6 +39,10 @@ class DBManager:
 
     @staticmethod
     def drop_table(cur):
+        """
+        Функция удаления таблиц
+        """
+
         cur.execute("""
                 DROP TABLE IF EXISTS vacancies;      
                 DROP TABLE IF EXISTS experience;
@@ -41,6 +52,10 @@ class DBManager:
 
     @staticmethod
     def create_table(cur):
+        """
+        Функция создания таблиц: employer, experience, employment, vacancies
+        """
+
         cur.execute("""
                     CREATE TABLE IF NOT EXISTS employer (
                     id varchar(20) PRIMARY KEY,
@@ -86,6 +101,10 @@ class DBManager:
 
     @staticmethod
     def add_experience(cur, response_experience):
+        """
+        Функция добавления данных в таблицу experience
+        """
+
         for experience in response_experience["experience"]:
             cur.execute("""
                             INSERT INTO experience(
@@ -102,6 +121,10 @@ class DBManager:
 
     @staticmethod
     def add_employment(cur, response_experience):
+        """
+        Функция добавления данных в таблицу employment
+        """
+
         for employment in response_experience["employment"]:
             cur.execute("""
                         INSERT INTO employment(
@@ -118,6 +141,10 @@ class DBManager:
 
     @staticmethod
     def add_employer(cur, response_company):
+        """
+        Функция добавления данных в таблицу employer
+        """
+
         cur.execute("""
             INSERT INTO employer(
             id,
@@ -139,7 +166,10 @@ class DBManager:
 
     @staticmethod
     def add_vacancies(cur, response_vacancies):
-        # заполнение таблицы вакансий
+        """
+        Функция добавления данных в таблицу vacancies
+        """
+
         for vac in response_vacancies["items"]:
             if vac["address"] is None:
                 address = None
