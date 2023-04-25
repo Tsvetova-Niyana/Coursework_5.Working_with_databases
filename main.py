@@ -36,7 +36,7 @@ if __name__ == '__main__':
             connect_db.add_employment(cur, response_dictionaries)
 
             #  заполнение таблиц компаний и их вакансий (employer / vacancies)
-            for item in range(10):
+            for item in range(2):
                 id_employer = input("Введите идентификатор компании (id_employer): ")
 
                 # получение информации о компании с hh.ru
@@ -52,6 +52,9 @@ if __name__ == '__main__':
 
                     # добавление вакансий в таблицу
                     connect_db.add_vacancies(cur, response_vacancies)
+
+            connect_db.get_companies_and_vacancies_count(cur)
+
 
     #         # cur.execute("""SELECT * FROM employer;""")
     #         # print(cur.fetchall())
