@@ -17,7 +17,7 @@ if __name__ == '__main__':
     connect_db = DBManager(database="coursework_working_with_databases", user="postgres",
                            password="postgres")
 
-    with connect_db.connect() as conn:
+    with connect_db.connect as conn:
         with conn.cursor() as cur:
 
             # удаление таблиц

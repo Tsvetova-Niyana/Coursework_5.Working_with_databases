@@ -18,6 +18,7 @@ class DBManager:
         self.user = user
         self.password = password
 
+    @property
     def connect(self):
         connect = psycopg2.connect(
             database=self.database,
