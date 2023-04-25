@@ -1,66 +1,9 @@
-import json
 import psycopg2
 
-import requests as requests
-
 from db_manager import add_experience, add_employment, add_employer, drop_table, create_table, add_vacancies
-
-
-def get_info_company(id_employer):
-    # получение информации о компании
-    response_company = requests.get(f'https://api.hh.ru/employers/{id_employer}').json()
-    return response_company
-
-def get_vacancies(id_employer):
-    for page in range(5):
-        response_vacancies = requests.get(f'https://api.hh.ru/vacancies?employer_id={id_employer}',
-                                          params={'per_page': 100, 'page': page}).json()
-    return response_vacancies
-
+from get_api_object import get_info_dictionaries, get_info_company, get_info_vacancies
 
 if __name__ == '__main__':
-
-    # получение информации о справочниках
-    response_experience = requests.get(f'https://api.hh.ru/dictionaries').json()
-
-    # получение информации об опыте
-    for experience in response_experience["experience"]:
-        print(experience['id'], experience['name'])
-    print()
-
-    # получение информации о занятости
-    for employment in response_experience["employment"]:
-        print(employment['id'], employment['name'])
-    print()
-
-
-
-    # получение информации о вакансии
-    # for page in range(5):
-    #     response_vacancies = requests.get(f'https://api.hh.ru/vacancies?employer_id=1519011',
-    #                                       params={'per_page': 100, 'page': page}).json()
-
-        # print(response_vacancies['items'][0]['id'])
-
-        # for vac in response_vacancies["items"]:
-        #     # print(json.dumps(vac, indent=4, ensure_ascii=False))
-        #     print(
-        #         vac["id"],
-        #         vac["name"],
-        #         vac["department"],
-        #         vac["area"]["name"],
-        #         vac["salary"]["from"],
-        #         vac["salary"]["to"],
-        #         vac["salary"]["currency"],
-        #         vac["published_at"],
-        #         vac["alternate_url"],
-        #         vac["employer"]["id"],
-        #         vac["experience"]["id"],
-        #         vac["employment"]["id"]
-        #         # vac["address"]["raw"]
-        #     )
-
-        # print(json.dumps(response_vacancies["items"], indent=4, ensure_ascii=False))
 
     #   1519011 - ФККГруп
     #   139     - IBS
@@ -73,74 +16,44 @@ if __name__ == '__main__':
     #   4649269 - Иннотех
     #   32918   - MANGO OFFICE
 
-
-
     with psycopg2.connect(database="coursework_working_with_databases", user="postgres",
                           password="postgres") as conn:
         with conn.cursor() as cur:
+
             # удаление таблиц
             drop_table(cur)
 
             # создание таблиц
             create_table(cur)
 
-            # заполнение таблицы об опыте
-            add_experience(cur, response_experience)
+            # получение справочников с hh.ru
+            response_dictionaries = get_info_dictionaries()
 
-            #  заполнение таблицы о режиме занятости
-            add_employment(cur, response_experience)
+            # заполнение таблицы об опыте (experience)
+            add_experience(cur, response_dictionaries)
 
-            #  заполнение таблицы компаний
+            #  заполнение таблицы о режиме занятости (employment)
+            add_employment(cur, response_dictionaries)
+
+            #  заполнение таблиц компаний и их вакансий (employer / vacancies)
             for item in range(10):
                 id_employer = input("Введите идентификатор компании (id_employer): ")
+
+                # получение информации о компании с hh.ru
                 response_company = get_info_company(id_employer)
+
+                # заполнение таблицы компаний (employer)
                 add_employer(cur, response_company)
 
+                # заполнение таблицы вакансий (vacancies)
                 for page in range(5):
-                    response_vacancies = requests.get(f'https://api.hh.ru/vacancies?employer_id={id_employer}',
-                                                      params={'per_page': 100, 'page': page}).json()
+
+                    # получение информации о вакансиях компании с hh.ru
+                    response_vacancies = get_info_vacancies(id_employer, page)
+
+                    # добавление вакансий в таблицу
                     add_vacancies(cur, response_vacancies)
 
-                # заполнение таблицы вакансий
-                #     for vac in response_vacancies["items"]:
-                #         print(vac)
-                #         if vac["address"].get('raw') == None:
-                #             address = None
-                #         else:
-                #             address = vac["address"]["raw"]
-                #
-                #         cur.execute("""
-                #                         INSERT INTO vacancies(
-                #                         id,
-                #                         name_vacancy,
-                #                         department,
-                #                         area_name,
-                #                         salary_from,
-                #                         salary_to,
-                #                         salary_currency,
-                #                         published_at,
-                #                         alternate_url,
-                #                         employer_id,
-                #                         experience_name,
-                #                         employment_name,
-                #                         address)
-                #                         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, , %s);
-                #                         """, (
-                #             vac["id"],
-                #             vac["name"],
-                #             vac["department"],
-                #             vac["area"]["name"],
-                #             vac["salary"]["from"],
-                #             vac["salary"]["to"],
-                #             vac["salary"]["currency"],
-                #             vac["published_at"],
-                #             vac["alternate_url"],
-                #             vac["employer"]["id"],
-                #             vac["experience"]["id"],
-                #             vac["employment"]["id"],
-                #             address))
-
-    #
     #         # cur.execute("""SELECT * FROM employer;""")
     #         # print(cur.fetchall())
     #         # # создание таблиц
@@ -217,8 +130,3 @@ if __name__ == '__main__':
     #         # search_client_by_info(conn, None, None, None, "89116655555")
     #
     conn.close()
-    for page in range(5):
-        response_vacancies = requests.get(f'https://api.hh.ru/vacancies?employer_id=1519011',
-                                          params={'per_page': 100, 'page': page}).json()
-        for vac in response_vacancies["items"]:
-            print(vac)

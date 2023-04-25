@@ -104,22 +104,22 @@ def add_employer(cur, response_company):
 def add_vacancies(cur, response_vacancies):
     # заполнение таблицы вакансий
     for vac in response_vacancies["items"]:
-        if vac["address"] == None:
+        if vac["address"] is None:
             address = None
         else:
             address = vac["address"]["raw"]
 
-        if vac["salary"]== None:
+        if vac["salary"] is None:
             salary_from = None
         else:
             salary_from = vac["salary"]["from"]
 
-        if vac["salary"] == None:
+        if vac["salary"] is None:
             salary_to = None
         else:
             salary_to = vac["salary"]["to"]
 
-        if vac["salary"] == None:
+        if vac["salary"] is None:
             salary_currency = None
         else:
             salary_currency = vac["salary"]["currency"]
