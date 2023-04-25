@@ -277,3 +277,45 @@ class DBManager:
 
         for vacancy in result:
             print(f"Вакансия: {vacancy[0]}, зарплата: {vacancy[1]} {vacancy[2]}")
+
+    @staticmethod
+    def get_vacancies_with_keyword(cur, keyword):
+        """
+        Функция для получения из БД списка всех вакансий, в названии которых содержатся переданные в
+        метод слова, например “python”
+        """
+
+        cur.execute(
+            """
+            select 
+                v.name_vacancy,
+                v.area_name,
+                coalesce(v.salary_from, 0) as salary_from,
+                coalesce (v.salary_to, 0) as salary_to,
+                coalesce (v.salary_currency, 'Не указано'),
+                v.published_at::date,
+                v.alternate_url,
+                e.name_company, 
+                ex.name_experience, 
+                em.name_employment, 
+                coalesce (v.address, 'Не указано') as address  
+            from vacancies v 
+            join employer e on v.employer_id = e.id 
+            join experience ex on v.experience_name = ex.id_experience 
+            join employment em on v.employment_name = em.id_employment  
+            where v.name_vacancy ilike ('%{}%');
+            """.format(keyword))
+
+        result = cur.fetchall()
+
+        for vacancy in result:
+            print(f'\nНазвание вакансии: {vacancy[0]}\n'
+                  f'Компания-работодатель: {vacancy[7]}\n'
+                  f'Требуемый опыт: {vacancy[8]}\n'
+                  f'Тип занятости: {vacancy[9]}\n'
+                  f'Месторасположение: {vacancy[1]}\n'
+                  f'Зарплата: {vacancy[2]} - {vacancy[3]}\n'
+                  f'Валюта: {vacancy[4]}\n'
+                  f'Дата публикации: {vacancy[5]}\n'
+                  f'Ссылка на вакансию: {vacancy[6]}'
+                  )

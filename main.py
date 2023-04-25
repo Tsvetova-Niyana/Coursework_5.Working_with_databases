@@ -53,12 +53,28 @@ if __name__ == '__main__':
                     # добавление вакансий в таблицу
                     connect_db.add_vacancies(cur, response_vacancies)
 
-            connect_db.get_companies_and_vacancies_count(cur)
+            is_get_companies_and_vacancies_count = input("Вывести перечень компаний с указанием количества "
+                                                         "открытых вакансий [да/нет]: ")
+            if is_get_companies_and_vacancies_count == 'да':
+                connect_db.get_companies_and_vacancies_count(cur)
 
-            connect_db.get_all_vacancies(cur)
+            is_get_all_vacancies = input("Вывести перечень вакансий [да/нет]: ")
+            if is_get_all_vacancies == 'да':
+                connect_db.get_all_vacancies(cur)
 
-            connect_db.get_avg_salary(cur)
+            is_get_avg_salary = input("Вывести среднюю зарплату по вакансиям [да/нет]: ")
+            if is_get_avg_salary == 'да':
+                connect_db.get_avg_salary(cur)
 
-            connect_db.get_vacancies_with_higher_salary(cur)
+            is_get_vacancies_with_higher_salary = input("Вывести вакансии с зарплатой "
+                                                        "выше среднего значения [да/нет]: ")
+            if is_get_vacancies_with_higher_salary == 'да':
+                connect_db.get_vacancies_with_higher_salary(cur)
+            # 'engineer'
+
+            is_get_vacancies_with_keyword = input("Поиск вакансий по ключевому слову [да/нет]: ")
+            if is_get_vacancies_with_keyword == 'да':
+                keyword = input('Введите ключевое слово поиска: ')
+                connect_db.get_vacancies_with_keyword(cur, keyword)
 
     conn.close()
