@@ -244,6 +244,16 @@ class DBManager:
         """
          Функция для получения из БД средней зарплаты по вакансиям (по нижней границе).
         """
+        cur.execute(
+            """
+            SELECT ROUND(AVG(v.salary_from), 2) as salary_from
+            FROM vacancies v;
+            """
+        )
+
+        result = cur.fetchall()
+
+        print(f'\nСредняя зарплата по вакансиям (срез по нижней границе) - {result[0][0]}')
 
 
 

@@ -57,6 +57,7 @@ if __name__ == '__main__':
 
             connect_db.get_all_vacancies(cur)
 
+            connect_db.get_avg_salary(cur)
 
     #         # cur.execute("""SELECT * FROM employer;""")
     #         # print(cur.fetchall())
