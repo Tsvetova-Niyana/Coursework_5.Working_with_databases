@@ -269,7 +269,8 @@ class DBManager:
                 v.salary_from, 
                 v.salary_currency 
             FROM vacancies v
-            WHERE v.salary_from > (SELECT ROUND(AVG(v.salary_from), 2) FROM vacancies v);
+            WHERE v.salary_from > (SELECT ROUND(AVG(v.salary_from), 2) FROM vacancies v)
+            ORDER BY v.salary_from;
             """
         )
 
@@ -287,7 +288,7 @@ class DBManager:
 
         cur.execute(
             """
-            select 
+            SELECT 
                 v.name_vacancy,
                 v.area_name,
                 coalesce(v.salary_from, 0) as salary_from,
@@ -299,11 +300,11 @@ class DBManager:
                 ex.name_experience, 
                 em.name_employment, 
                 coalesce (v.address, 'Не указано') as address  
-            from vacancies v 
-            join employer e on v.employer_id = e.id 
-            join experience ex on v.experience_name = ex.id_experience 
-            join employment em on v.employment_name = em.id_employment  
-            where v.name_vacancy ilike ('%{}%');
+            FROM vacancies v 
+            JOIN employer e ON v.employer_id = e.id 
+            JOIN experience ex ON v.experience_name = ex.id_experience 
+            JOIN employment em ON v.employment_name = em.id_employment  
+            WHERE v.name_vacancy ilike ('%{}%');
             """.format(keyword))
 
         result = cur.fetchall()
