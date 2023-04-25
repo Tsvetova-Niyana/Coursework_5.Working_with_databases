@@ -255,5 +255,25 @@ class DBManager:
 
         print(f'\nСредняя зарплата по вакансиям (срез по нижней границе) - {result[0][0]}')
 
+    @staticmethod
+    def get_vacancies_with_higher_salary(cur):
+        """
+        Функция для получения из БД списка всех вакансий, у которых зарплата выше средней по всем
+        вакансиям
+        """
 
+        cur.execute(
+            """
+            SELECT 
+                v.name_vacancy, 
+                v.salary_from, 
+                v.salary_currency 
+            FROM vacancies v
+            WHERE v.salary_from > (SELECT ROUND(AVG(v.salary_from), 2) FROM vacancies v);
+            """
+        )
 
+        result = cur.fetchall()
+
+        for vacancy in result:
+            print(f"Вакансия: {vacancy[0]}, зарплата: {vacancy[1]} {vacancy[2]}")
