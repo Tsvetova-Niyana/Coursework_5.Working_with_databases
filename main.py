@@ -1,6 +1,4 @@
-import psycopg2
-
-from db_manager import *  # add_experience, add_employment, add_employer, drop_table, create_table, add_vacancies
+from db_manager import *
 from get_api_object import get_info_dictionaries, get_info_company, get_info_vacancies
 
 if __name__ == '__main__':
@@ -19,10 +17,7 @@ if __name__ == '__main__':
     connect_db = DBManager(database="coursework_working_with_databases", user="postgres",
                            password="postgres")
 
-    with psycopg2.connect(
-            database=connect_db.database,
-            user=connect_db.user,
-            password=connect_db.password) as conn:
+    with connect_db.connect() as conn:
         with conn.cursor() as cur:
 
             # удаление таблиц

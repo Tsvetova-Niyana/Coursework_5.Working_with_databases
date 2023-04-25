@@ -1,19 +1,38 @@
+"""
+Создать класс DBManager для работы с данными в БД.
+Создайте класс `DBManager`, который будет подключаться к БД Postgres и иметь следующие методы:
+
+- `get_companies_and_vacancies_count()`: получает список всех компаний и количество вакансий у каждой компании.
+- `get_all_vacancies()`: получает список всех вакансий с указанием названия компании, названия вакансии и зарплаты и ссылки на вакансию.
+- `get_avg_salary()`: получает среднюю зарплату по вакансиям.
+- `get_vacancies_with_higher_salary()`: получает список всех вакансий, у которых зарплата выше средней по всем вакансиям.
+- `get_vacancies_with_keyword()`: получает список всех вакансий, в названии которых содержатся переданные в метод слова, например “python”.
+"""
+import psycopg2
+
 
 class DBManager:
-    # database="coursework_working_with_databases", user="postgres",
-    #                           password="postgres"
+
     def __init__(self, database, user, password):
         self.database = database
         self.user = user
         self.password = password
 
+    def connect(self):
+        connect = psycopg2.connect(
+            database=self.database,
+            user=self.user,
+            password=self.password)
+
+        return connect
+
     @staticmethod
     def drop_table(cur):
         cur.execute("""
-                DROP TABLE vacancies;      
-                DROP TABLE experience;
-                DROP TABLE employment;    
-                DROP TABLE employer;      
+                DROP TABLE IF EXISTS vacancies;      
+                DROP TABLE IF EXISTS experience;
+                DROP TABLE IF EXISTS employment;    
+                DROP TABLE IF EXISTS employer;      
                 """)
 
     @staticmethod
