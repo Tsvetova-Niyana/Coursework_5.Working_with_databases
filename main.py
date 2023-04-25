@@ -55,6 +55,8 @@ if __name__ == '__main__':
 
             connect_db.get_companies_and_vacancies_count(cur)
 
+            connect_db.get_all_vacancies(cur)
+
 
     #         # cur.execute("""SELECT * FROM employer;""")
     #         # print(cur.fetchall())

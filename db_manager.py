@@ -196,6 +196,10 @@ class DBManager:
 
     @staticmethod
     def get_companies_and_vacancies_count(cur):
+        """
+        Функция для получения из БД списка всех компаний и количество вакансий у каждой компании.
+        """
+
         cur.execute("""SELECT 
         e.name_company, 
         e.open_vacancies 
@@ -204,4 +208,42 @@ class DBManager:
 
         for company in company_query:
             print(f'\nНазвание компании: {company[0]}\nКоличество открытых вакансий: {company[1]}')
+
+    @staticmethod
+    def get_all_vacancies(cur):
+        """
+        Функция для получения из БД списка всех вакансий с указанием названия компании, названия вакансии и
+        зарплаты и ссылки на вакансию.
+        """
+
+        cur.execute(
+            """
+            SELECT
+                e.name_company,
+                v.name_vacancy, 
+                coalesce(v.salary_from, 0) as salary_from, 
+                coalesce(v.salary_to, 0) as salary_to, 
+                coalesce(v.salary_currency, 'Не указано') as salary_currency, 
+                v.alternate_url 
+            FROM vacancies v
+            JOIN employer e ON v.employer_id = e.id;
+            """
+        )
+
+        result = cur.fetchall()
+
+        for vacancy in result:
+            print(f'\nКомпания: {vacancy[0]}\n'
+                  f'Вакансия: {vacancy[1]}\n'
+                  f'Диапазон зарплаты: {vacancy[2]} - {vacancy[3]}\n'
+                  f'Валюта зарплаты: {vacancy[4]}\n'
+                  f'Ссылка на вакансию: {vacancy[5]}')
+
+    @staticmethod
+    def get_avg_salary(cur):
+        """
+         Функция для получения из БД средней зарплаты по вакансиям (по нижней границе).
+        """
+
+
 
