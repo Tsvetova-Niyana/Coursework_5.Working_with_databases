@@ -1,6 +1,6 @@
 import psycopg2
 
-from db_manager import add_experience, add_employment, add_employer, drop_table, create_table, add_vacancies
+from db_manager import *  # add_experience, add_employment, add_employer, drop_table, create_table, add_vacancies
 from get_api_object import get_info_dictionaries, get_info_company, get_info_vacancies
 
 if __name__ == '__main__':
@@ -16,24 +16,29 @@ if __name__ == '__main__':
     #   4649269 - Иннотех
     #   32918   - MANGO OFFICE
 
-    with psycopg2.connect(database="coursework_working_with_databases", user="postgres",
-                          password="postgres") as conn:
+    connect_db = DBManager(database="coursework_working_with_databases", user="postgres",
+                           password="postgres")
+
+    with psycopg2.connect(
+            database=connect_db.database,
+            user=connect_db.user,
+            password=connect_db.password) as conn:
         with conn.cursor() as cur:
 
             # удаление таблиц
-            drop_table(cur)
+            connect_db.drop_table(cur)
 
             # создание таблиц
-            create_table(cur)
+            connect_db.create_table(cur)
 
             # получение справочников с hh.ru
             response_dictionaries = get_info_dictionaries()
 
             # заполнение таблицы об опыте (experience)
-            add_experience(cur, response_dictionaries)
+            connect_db.add_experience(cur, response_dictionaries)
 
             #  заполнение таблицы о режиме занятости (employment)
-            add_employment(cur, response_dictionaries)
+            connect_db.add_employment(cur, response_dictionaries)
 
             #  заполнение таблиц компаний и их вакансий (employer / vacancies)
             for item in range(10):
@@ -43,16 +48,15 @@ if __name__ == '__main__':
                 response_company = get_info_company(id_employer)
 
                 # заполнение таблицы компаний (employer)
-                add_employer(cur, response_company)
+                connect_db.add_employer(cur, response_company)
 
                 # заполнение таблицы вакансий (vacancies)
                 for page in range(5):
-
                     # получение информации о вакансиях компании с hh.ru
                     response_vacancies = get_info_vacancies(id_employer, page)
 
                     # добавление вакансий в таблицу
-                    add_vacancies(cur, response_vacancies)
+                    connect_db.add_vacancies(cur, response_vacancies)
 
     #         # cur.execute("""SELECT * FROM employer;""")
     #         # print(cur.fetchall())
